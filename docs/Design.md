@@ -2,21 +2,21 @@
 
 ## Analyzer
 
-There are two major design goals of how the Analyzer should work:
+There are two major design goals for the Analyzer:
 
-1) It must not require any modifications to the project being analyzed. In particular, no build system plugin must need
-   to be applied in order to be able to analyze the project. This is because even for source code under our control, we
-   do not want to interfere with development of the product teams, and we do want to avoid vendor lock-in by introducing
-   changes to be build system that potentially are hard to change later on. For source code out of our control, like
-   that of Open Source projects, it would be practically impossible to convince their maintainers to apply any
-   third-party plugins they do not require.
+1) It must not require any modifications to the project being analyzed. In particular, there must be no requirement for
+   a particular build system plugin to be installed before the Analyzer can analyze a project. This is because even for
+   source code under our control, we do not want to interfere with development processes determined by the product
+   teams, and we do want to avoid vendor lock-in by introducing modifications to the build system that potentially are
+   hard to change later on. For source code we do not control, such as that of Open Source projects, it would be practically
+   impossible to convince the maintainers to apply any third-party plugins they do not require.
 
 2) The reported meta-data must not be limited to the declared license, but in particular the canonical source code
-   location of the specific version of a dependency must be reported. This is both for proper recording of provenance
-   information, and to be able to download and scan the actual source code for license / copyright information instead
+   location of the specific version of a dependency must be reported. This helps us both to record provenance
+   information and download and scan the actual source code for license/copyright information instead
    of relying on declared information.
 
-Several existing similar tools have been looked at before developing the Analyzer. Please see the below table for an
+We looked at similar tools before developing the Analyzer. Please see the table below for an
 overview:
 
 | Tool | Works without modifications to the project to analyze | Looks at package manager meta-data | Looks at source code of dependencies |
@@ -66,11 +66,11 @@ overview:
 ##### Conclusions
 
 While using `pip.req.parse_requirements` to parse `requirements.txt` files and using `distutils.core.setup` to parse
-`setup.py` files basically is an elegant solution, that approach cannot handle e.g. custom / extra index URLs defined as
-part of `requirements.txt` files like:
+`setup.py` files basically is an elegant solution, that approach cannot handle, for example, custom/extra index URLs defined as
+part of `requirements.txt` files such as:
 
     # common requirements
     -i http://foo.bar.com/ptpi/devpi/dev/+simple/
 
-That is why calling `pip` and inspecting the output probably is the way to go to correctly determine the dependencies,
-even if that already downloads the dependencies at a stage where we would only need the dependency graph.
+That is why calling `pip` and inspecting the output is probably the best way to determine the dependencies correctly,
+even if that means downloading the dependencies already at a stage, where only need a dependency graph would suffice.

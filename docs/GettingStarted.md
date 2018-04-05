@@ -1,9 +1,9 @@
 # Getting Started
 
-This tutorial gives a brief introduction to how the tools work together at the example of the
-[mime-types](https://www.npmjs.com/package/mime-types) NPM package. It will guide through the main steps for running
-ORT:
+This tutorial offers a brief introduction to how ORT works, by guiding you through the main steps for running ORT on the
+NPM package [mime-types](https://www.npmjs.com/package/mime-types).
 
+In the broadest outline, the steps are:
 * Install ORT.
 * Analyze the dependencies of `mime-types` using the `analyzer`.
 * Scan the source code of `mime-types` and its dependencies using the `scanner`.
@@ -13,10 +13,9 @@ ORT:
 ORT is tested to run on Linux, macOS, and Windows. This tutorial assumes that you are running on Linux, but it should be
 easy to adapt the commands to macOS or Windows.
 
-To run ORT the following tools are required:
+To run ORT, please ensure that your system meets the prerequisites listed under
+[ORT Prerequisites (README)](./README.html#ort-prerequisites)
 
-* Java (version >= 8)
-* Git
 
 For some of the supported package managers and SCMs additional tools need to be installed:
 
@@ -27,9 +26,14 @@ For some of the supported package managers and SCMs additional tools need to be 
 * Subversion
 * Yarn 1.3.2
 
+  Note that the OSS toolkit expects specific versions of both Yarn and NPM. Installing the latest may not guarantee and
+  error-free run, so please use the command-line switches `--ignore-versions` (Yarn) and `--allow-dynamic-versions`
+  (NPM) -- see also *Analyzer* help and *Scanner* help (after [installing ORT](#download-&-install-ort), change to its
+  directory and run, for example, ./analyzer/build/install/analyzer/bin/analyzer --help). [curating](#curating-the-metadata)
+
 ## 2. Download & Install ORT
 
-In future we will provide binaries of the ORT tools, but currently you have to build the tools on your own. First
+In the future, we will provide binaries of the ORT tools, but currently you have to build the tools on your own. First
 download the source code from GitHub:
 
 ```bash
@@ -43,16 +47,16 @@ cd oss-review-toolkit
 ./gradlew installDist
 ```
 
-This will create binaries of the tools in their builds folders, for example the analyzer binary can be found in
-`analyzer/build/install/analyzer/bin/analyzer`. To get the command line help for tool run it with the `--help` option:
+This will create binaries of the tools in their builds folders, for example the *Analyzer* binary can be found in
+`analyzer/build/install/analyzer/bin/analyzer`. To get the command line help for the tool, run it with the `--help` option:
 
 ```bash
 analyzer/build/install/analyzer/bin/analyzer --help
 ```
 
-## 3. Download the `mime-types` source code
+## 3. Download the `mime-types` Source Code
 
-Before scanning `mime-types` its source code has to be downloaded. For reliable results we use version 2.1.18 (replace
+Run a scan on a locally cloned copy of `mime-types`. For reliable results, we use version 2.1.18 (replace
 `[mime-types-path]` with the path you want to clone `mime-types` to):
 
 ```bash
@@ -61,25 +65,25 @@ cd [mime-types-path]
 git checkout 2.1.18
 ```
 
-## 4. Run the analyzer on `mime-types`
+## 4. Run the *Analyzer* on `mime-types`
 
 The next step is to run the `analyzer`. It will create a JSON or YAML output file containing the full dependency tree of
 `mime-types` including the meta-data of `mime-types` and its dependencies.
 
 ```bash
-# The easiest way to run the analyzer. Be aware that the [output-path] directory must not exist.
+# The easiest way to run the *Analyzer*. Be aware that the [output-path] directory must not exist.
 analyzer/build/install/analyzer/bin/analyzer -i [mime-types-path] -o [output-path]
 
-# The command above will create the default YAML output. If you prefer JSON run:
+# The command above creates the default YAML output. If you prefer JSON run:
 analyzer/build/install/analyzer/bin/analyzer -i [mime-types-path] -o [output-path] -f JSON
 
-# To get the maximum log output run:
+# To get the maximum log output, run:
 analyzer/build/install/analyzer/bin/analyzer -i [mime-types-path] -o [output-path] --debug --stacktrace
 ```
 
-The `analyzer` will search for build files of all supported package managers. In case of `mime-types` it will find the
-`package.json` file and write the results of the dependency analysis to a file called `package-json-dependencies.yml`:
-
+The *Analyzer* searches for build files for all supported package managers. In `mime-types`, it should find the
+`package.json` file and write the results of the dependency analysis to `package-json-dependencies.yml`:
+    
 ```bash
 $ analyzer/build/install/analyzer/bin/analyzer -i ~/git/mime-types -o ~/analyzer-results/mime-types
 The following package managers are activated:
@@ -96,9 +100,9 @@ to
 done.
 ```
 
-The result file will contain information about the `mime-types` package itself, the dependency tree for each scope, and
-information about each dependency. The scope names come from the package managers, for NPM packages these are usually
-`dependencies` and `devDependencies`, for Maven package it would be `compile`, `runtime`, `test`, and so on.
+The result file contains information about the `mime-types` package itself, the dependency tree for each scope, and
+information about each dependency. The scope names come from the package managers, for NPM packages, these are usually
+`dependencies` and `devDependencies`, for Maven, it is `compile`, `runtime`, `test`, and so on.
 
 The structure of the results file is:
 
@@ -134,7 +138,7 @@ project:
       name: "mime-db"
       version: "1.33.0"
       dependencies: []
-      errors: [] # If an error occured during the dependency analysis of this package it would be in this list.
+      errors: [] # If an error occurred during the dependency analysis of this package it would be in this list.
   - name: "devDependencies"
     delivered: false
     dependencies:
@@ -188,7 +192,7 @@ errors: []
 ```
 
 If you try the commands above with a different NPM package that does not have a
-[package-lock.json](https://docs.npmjs.com/files/package-locks) (or `npm-shrinkwrap.json` or `yarn.lock`) the analyzer
+[package-lock.json](https://docs.npmjs.com/files/package-locks) (or `npm-shrinkwrap.json` or `yarn.lock`), the analyzer
 will terminate with an error message like this:
 
 ```
@@ -197,7 +201,7 @@ ERROR - Analysis for these projects did not complete successfully:
 ```
 
 This means that there have been issues with the dependency resolution of these packages. The reasons for these errors
-can be found in the log output of the `analyzer` or in the results file:
+can be found in the log output of the *Analyzer* or in the results file:
 
 ```
 Resolving NPM dependencies for '[npm-project-path]/package.json'...
@@ -205,33 +209,34 @@ Resolving NPM dependencies for '[npm-project-path]/package.json'...
 ```
 
 This happens because without a [lockfile](https://docs.npmjs.com/files/package-locks) the versions of transitive
-dependencies could change at any time. Therefore ORT checks for the presence of a lockfile to generate reliable results.
-This check can be disabled with the `--allow-dynamic-versions` option.
+dependencies can change at any time. Therefore, ORT checks for the presence of a lockfile to generate reliable results.
+This check can be disabled with the command-line option `--allow-dynamic-versions`.
 
-## 5. Run the scanner
+## 5. Run the *Scanner*
 
-To scan the source code of `mime-types` and its dependencies the source code of `mime-types` and all its dependencies
-needs to be downloaded. The `downloader` tool could be used for this, but it is also integrated in the `scanner` tool,
-so the scanner will automatically download the source code if the required VCS metadata could be obtained.
+To scan the source code of `mime-types` and its dependencies, the source code of `mime-types` and all its dependencies
+needs to be downloaded. This is handled by the *Downloader*, which is integrated in the *Scanner*,
+so the scanner automatically downloads the source code if the required VCS metadata can be obtained.
 
-ORT is designed to integrate lots of different scanners and is not limited to license scanners, technically any tool
-that explores the source code of a software package could be integrated. The actual scanner does not have to run on the
-same machine, for example we will soon integrate the [ClearlyDefined](https://clearlydefined.io/) scanner backend which
-will perform the actual scanning remotely.
+ORT is designed to integrate lots of different scanners and is not limited to license scanners -- technically any tool
+that explores the source code of a software package can be integrated. The actual scanner does not have to run on the
+same machine, for example, we will soon integrate the [ClearlyDefined](https://clearlydefined.io/) scanner backend 
+to perform the actual scanning remotely.
 
-For this tutorial we will use `ScanCode`. You do not have to install the tool manually, it will automatically be
+For this tutorial, we will `ScanCode`. You do not have to install it manually, it is automatically be
 bootstrapped by the `scanner`.
 
-As for the `analyzer` you can get the command line options for the `scanner` using the `--help` option:
+As with the *Analyzer*, you can get the command line options for the *Scanner* using the `--help` option:
 
 ```bash
 scanner/build/install/scanner/bin/scanner --help
 ```
 
-The `mime-types` package has only one dependency in the `depenencies` scope, but a lot of dependencies in the
+The `mime-types` package has only one dependency in the `dependencies` scope, but a many in the
 `devDependencies` scope. Scanning all of the `devDependencies` would take a lot of time, so we will only run the
-scanner on the `dependencies` scope in this tutorial. If you also want to scan the `devDependencies` it is strongly
-advised to configure a cache for the scan results as documented above to speed up repeated scans.
+scanner on the `dependencies` scope in this tutorial. If you also want to scan the `devDependencies`, we strongly
+recommend that you configure a cache for the scan results as documented under [scanner](./README.html/#scanner) in the
+README file.
 
 ```bash
 $ scanner/build/install/scanner/bin/scanner -d [analyzer-output-path]/package-json-dependencies.yml -o [scanner-output-path] --scopes dependencies
@@ -252,7 +257,7 @@ Detected licenses for 'NPM::mime-db:1.33.0': MIT
 Writing scan summary to [scanner-output-path]/scan-summary.yml.
 ```
 
-As you can see from the output the licenses detected by `ScanCode` match the licenses declared by the packages. This is
+As you can see from the output, the licenses detected by `ScanCode` match the licenses declared by the packages. This is
 because we scanned a small and well-maintained package in this example, but if you run the scan on a bigger project you
 will see that `ScanCode` often finds more licenses than are declared by the packages.
 
@@ -261,15 +266,15 @@ The `scanner` writes the raw scanner output for each scanned package to a file i
 which contains a summary of all licenses for all packages and some more details like cache statistics and information
 about the scanned scopes.
 
-## 6. Curating the metadata
+## 6. Curating the Metadata
 
-In the example above everything went well because the VCS information provided by the packages was correct, but this is
+In the example above, everything went well because the VCS information provided by the packages was correct, but this is
 not always the case. Often the metadata of packages has no VCS information, points to outdated repositories, or the
-repositories are not correctly tagged. Because this information can not always be fixed in remote packages ORT provides
-a mechanism to curate metadata of packages.
+repositories are not correctly tagged. Because it is not always possible to correct this information in remote packages, ORT provides
+a mechanism to curate package metadata.
 
-These curations can be configured in a YAML file that has to be passed to the `analyzer`. The data from the curations
-file will overwrite the metadata provided by the packages themselves. This way it is possible to fix borken VCS URLs or
+These curations can be configured in a YAML file that has to be passed to the *Analyzer*. The data from the curations
+file will overwrite the metadata provided by the packages themselves. This way, it is possible to fix broken VCS URLs or
 provide the location of source artifacts. The structure of the curations file is:
 
 ```yaml
@@ -315,11 +320,11 @@ provide the location of source artifacts. The structure of the curations file is
       revision: "73f2b3c319af82fd8e490d40dd89a15951069b0d"
 ```
 
-To use the curations file pass it to the `--package-curations-file` option of the `analyzer`:
+To use the curations file pass it to the `--package-curations-file` option of the *Analyzer*:
 
 ```
 analyzer/build/install/analyzer/bin/analyzer -i [input-path] -o [output-path] --package-curations-file [curations-file-path]
 ```
 
-In future we will integrate [ClearlyDefined](https://clearlydefined.io/) as a source for curated metadata. Until then,
+In future, we will integrate [ClearlyDefined](https://clearlydefined.io/) as a source for curated metadata. Until then,
 and also for curations for internal packages that cannot be published, the curations file can be used.
