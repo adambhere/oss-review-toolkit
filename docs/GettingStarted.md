@@ -22,12 +22,14 @@ For some of the supported package managers and SCMs additional tools need to be 
 
 * CVS
 * [dep](https://github.com/golang/dep) 0.4.1
-* Go (tested with 1.10)
+ --ignore-versions (yarn)* Go (tested with 1.10)
 * Mercurial
 * NPM 5.5.1 and Node.js 8.x (required for this tutorial because we scan `mime-types` which is an NPM project)
 * SBT
 * Subversion
 * Yarn 1.3.2
+
+Note: You can try to run other versions of these tools, but this may require the command-line switch  `--ignore-versions`
 
 ## 2. Download & Install ORT
 
